@@ -31,8 +31,8 @@ has processor => (
 
 has writer => (
     is      => 'ro',
-    does    => 'Spreadsheet::Template::Renderer',
-    handles => 'Spreadsheet::Template::Renderer',
+    does    => 'Spreadsheet::Template::Writer',
+    handles => 'Spreadsheet::Template::Writer',
     lazy    => 1,
     default => sub {
         my $self = shift;

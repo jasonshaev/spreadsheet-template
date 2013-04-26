@@ -1,7 +1,7 @@
 package Spreadsheet::Template::Writer::Excel;
 use Moose::Role;
 
-use Class::Load;
+use Class::Load 'load_class';
 
 with 'Spreadsheet::Template::Writer';
 
@@ -23,6 +23,7 @@ has _fh => (
     isa     => 'FileHandle',
     lazy    => 1,
     default => sub {
+        my $self = shift;
         open my $fh, '>', $self->_output
             or die "Failed to open filehandle: $!";
         binmode $fh;
@@ -32,8 +33,7 @@ has _fh => (
 
 has _output => (
     is      => 'ro',
-    isa     => 'ScalarRef[Str]',
-    lazy    => 1,
+    isa     => 'ScalarRef[Maybe[Str]]',
     default => sub { \(my $str) },
 );
 
@@ -42,6 +42,7 @@ sub write {
 
     # ...
 
+    $self->excel->close;
     return ${ $self->_output };
 }
 
