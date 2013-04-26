@@ -1,0 +1,13 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Spreadsheet::Template;
+
+my $template = Spreadsheet::Template->new;
+my $in = do { local $/; <> };
+my $out = $template->render($in);
+open my $fh, '>', 'out.xlsx';
+binmode $fh;
+$fh->print($out);
+$fh->close;
