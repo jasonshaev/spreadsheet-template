@@ -1,0 +1,9 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Spreadsheet::Template::Generator;
+
+my $generator = Spreadsheet::Template::Generator->new;
+open my $fh, '>:encoding(utf8)', 'out.json';
+$fh->print($generator->generate($ARGV[0]));
