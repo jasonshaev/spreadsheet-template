@@ -13,6 +13,18 @@ sub make_excel {
     my $excel = $parser->parse($filename);
     die $parser->error unless $excel;
 
+    # just for consistency
+    for my $sheet ($excel->worksheets) {
+        $sheet->{RowHeight} = [
+            map { defined $_ ? $_ : $sheet->get_default_row_height }
+                $sheet->get_row_heights
+        ];
+        $sheet->{ColWidth} = [
+            map { defined $_ ? $_ : $sheet->get_default_col_width }
+                $sheet->get_col_widths
+        ];
+    }
+
     return $excel;
 }
 

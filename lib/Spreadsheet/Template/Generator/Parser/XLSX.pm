@@ -40,13 +40,13 @@ sub make_excel {
             $row_heights[$row->att('r') - 1] = $row->att('ht');
         }
 
-        $sheet->{DefRowHeight} = $default_row_height;
-        $sheet->{DefColWidth} = $default_column_width;
+        $sheet->{DefRowHeight} = 0+$default_row_height;
+        $sheet->{DefColWidth} = 0+$default_column_width;
         $sheet->{RowHeight} = [
-            map { defined $_ ? $_ : $default_row_height } @row_heights
+            map { defined $_ ? 0+$_ : 0+$default_row_height } @row_heights
         ];
         $sheet->{ColWidth} = [
-            map { defined $_ ? $_ : $default_column_width } @column_widths
+            map { defined $_ ? 0+$_ : 0+$default_column_width } @column_widths
         ];
     }
 
