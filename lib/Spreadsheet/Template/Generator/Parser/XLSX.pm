@@ -50,8 +50,8 @@ sub _parse_cell_sizes {
     my @row_heights;
 
     my ($format) = $root->find_nodes('//sheetFormatPr');
-    my $default_row_height = $format->att('defaultRowHeight');
-    my $default_column_width = $format->att('baseColWidth');
+    my $default_row_height = $format->att('defaultRowHeight') || 15;
+    my $default_column_width = $format->att('baseColWidth') || 10;
 
     for my $col ($root->find_nodes('//col')) {
         $column_widths[$col->att('min') - 1] = $col->att('width');
