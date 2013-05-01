@@ -39,6 +39,7 @@ sub _parse_worksheet {
     my ($sheet) = @_;
 
     my $data = {
+        name          => $sheet->get_name,
         row_heights   => [ $sheet->get_row_heights ],
         column_widths => [ $sheet->get_col_widths ],
         cells         => [],
