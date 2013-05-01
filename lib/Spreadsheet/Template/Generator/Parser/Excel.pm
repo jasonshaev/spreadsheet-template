@@ -72,10 +72,36 @@ sub _parse_cell {
     my $self = shift;
     my ($cell) = @_;
 
+    my %types = (
+        'Numeric' => 'number',
+        'Text'    => 'string',
+        'Date'    => 'date_time',
+    );
+
+    my $contents = $cell->unformatted;
+    my $type = $cell->type;
+
+    if ($type eq 'Numeric') {
+        $type = 'number';
+    }
+    elsif ($type eq 'Text') {
+        if ($contents =~ /^=/) {
+            $type = 'formula';
+        }
+        else {
+            $type = 'string';
+        }
+    }
+    elsif ($type eq 'Date') {
+        $type = 'date_time';
+    }
+    else {
+        die "unknown type $type";
+    }
 
     my $data = {
-        contents => $self->_filter_cell_contents($cell->unformatted),
-        type     => $cell->type,
+        contents => $self->_filter_cell_contents($contents, $type),
+        type     => $type,
     };
 
     return $data;

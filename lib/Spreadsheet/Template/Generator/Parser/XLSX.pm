@@ -12,11 +12,19 @@ sub make_excel {
     return Spreadsheet::XLSX->new($filename);
 }
 
+# XXX this stuff all feels like working around bugs in Spreadsheet::XLSX -
+# maybe look into that at some point
 sub _filter_cell_contents {
     my $self = shift;
-    my ($contents) = @_;
-    # XXX this decode call really feels like a bug in Spreadsheet::XLSX
-    return XML::Entities::decode('all', $contents);
+    my ($contents, $type) = @_;
+
+    $contents = XML::Entities::decode('all', $contents);
+
+    if ($type eq 'number') {
+        $contents = 0+$contents;
+    }
+
+    return $contents;
 }
 
 __PACKAGE__->meta->make_immutable;
