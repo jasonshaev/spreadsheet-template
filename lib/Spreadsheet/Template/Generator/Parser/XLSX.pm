@@ -8,12 +8,20 @@ use XML::Twig;
 
 with 'Spreadsheet::Template::Generator::Parser::Excel';
 
-sub make_excel {
+sub _build_excel {
     my $self = shift;
-    my ($filename) = @_;
-    my $excel = Spreadsheet::XLSX->new($filename);
+    my $excel = Spreadsheet::XLSX->new($self->filename);
+    $self->_fixup_excel($excel);
+    return $excel;
+}
 
-    # XXX Spreadsheet::XLSX doesn't extract this information currently
+# XXX Spreadsheet::XLSX doesn't extract this information currently
+sub _fixup_excel {
+    my $self = shift;
+    my ($excel) = @_;
+
+    my $filename = $self->filename;
+
     my $zip = Archive::Zip->new;
     die "Can't open $filename as zip file"
         unless $zip->read($filename) == Archive::Zip::AZ_OK;
@@ -22,46 +30,57 @@ sub make_excel {
         my $contents = $zip->memberNamed("xl/$sheet->{path}")->contents;
         next unless $contents;
 
-        my @column_widths;
-        my @row_heights;
-
         my $xml = XML::Twig->new;
         $xml->parse($contents);
         my $root = $xml->root;
 
-        my ($format) = $root->find_nodes('//sheetFormatPr');
-        my $default_row_height = $format->att('defaultRowHeight');
-        my $default_column_width = $format->att('baseColWidth');
+        $self->_parse_cell_sizes($sheet, $root);
+        $self->_parse_formulas($sheet, $root);
+    }
+}
 
-        for my $col ($root->find_nodes('//col')) {
-            $column_widths[$col->att('min') - 1] = $col->att('width');
-        }
+sub _parse_cell_sizes {
+    my $self = shift;
+    my ($sheet, $root) = @_;
 
-        for my $row ($root->find_nodes('//row')) {
-            $row_heights[$row->att('r') - 1] = $row->att('ht');
-        }
+    my @column_widths;
+    my @row_heights;
 
-        $sheet->{DefRowHeight} = 0+$default_row_height;
-        $sheet->{DefColWidth} = 0+$default_column_width;
-        $sheet->{RowHeight} = [
-            map { defined $_ ? 0+$_ : 0+$default_row_height } @row_heights
-        ];
-        $sheet->{ColWidth} = [
-            map { defined $_ ? 0+$_ : 0+$default_column_width } @column_widths
-        ];
+    my ($format) = $root->find_nodes('//sheetFormatPr');
+    my $default_row_height = $format->att('defaultRowHeight');
+    my $default_column_width = $format->att('baseColWidth');
 
-        for my $formula ($root->find_nodes('//f')) {
-            my $cell_id = $formula->parent->att('r');
-            my ($col, $row) = $cell_id =~ /([A-Z]+)([0-9]+)/;
-            $col =~ tr/A-Z/0-9A-P/;
-            $col = POSIX::strtol($col, 26);
-            $row = $row - 1;
-            my $cell = $sheet->get_cell($row, $col);
-            $cell->{Formula} = "=" . $formula->text;
-        }
+    for my $col ($root->find_nodes('//col')) {
+        $column_widths[$col->att('min') - 1] = $col->att('width');
     }
 
-    return $excel;
+    for my $row ($root->find_nodes('//row')) {
+        $row_heights[$row->att('r') - 1] = $row->att('ht');
+    }
+
+    $sheet->{DefRowHeight} = 0+$default_row_height;
+    $sheet->{DefColWidth} = 0+$default_column_width;
+    $sheet->{RowHeight} = [
+        map { defined $_ ? 0+$_ : 0+$default_row_height } @row_heights
+    ];
+    $sheet->{ColWidth} = [
+        map { defined $_ ? 0+$_ : 0+$default_column_width } @column_widths
+    ];
+}
+
+sub _parse_formulas {
+    my $self = shift;
+    my ($sheet, $root) = @_;
+
+    for my $formula ($root->find_nodes('//f')) {
+        my $cell_id = $formula->parent->att('r');
+        my ($col, $row) = $cell_id =~ /([A-Z]+)([0-9]+)/;
+        $col =~ tr/A-Z/0-9A-P/;
+        $col = POSIX::strtol($col, 26);
+        $row = $row - 1;
+        my $cell = $sheet->get_cell($row, $col);
+        $cell->{Formula} = "=" . $formula->text;
+    }
 }
 
 # XXX this stuff all feels like working around bugs in Spreadsheet::XLSX -

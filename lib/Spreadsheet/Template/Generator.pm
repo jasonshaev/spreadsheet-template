@@ -10,8 +10,8 @@ sub generate {
     (my $ext = $filename) =~ s/.*\.//;
     my $class = $self->parser_classes->{$ext};
     load_class($class);
-    my $parser = $class->new;
-    my $data = $parser->parse($filename);
+    my $parser = $class->new(filename => $filename);
+    my $data = $parser->parse;
     return JSON->new->pretty->encode($data);
 }
 

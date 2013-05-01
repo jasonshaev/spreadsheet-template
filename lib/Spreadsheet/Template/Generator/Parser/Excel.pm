@@ -3,25 +3,28 @@ use Moose::Role;
 
 with 'Spreadsheet::Template::Generator::Parser';
 
-requires 'make_excel';
+requires '_build_excel';
+
+has excel => (
+    is      => 'ro',
+    isa     => 'Object',
+    lazy    => 1,
+    builder => '_build_excel',
+);
 
 sub parse {
     my $self = shift;
-    my ($filename) = @_;
-
-    my $excel = $self->make_excel($filename);
-    return $self->_parse_workbook($excel);
+    return $self->_parse_workbook;
 }
 
 sub _parse_workbook {
     my $self = shift;
-    my ($excel) = @_;
 
     my $data = {
         worksheets => [],
     };
 
-    for my $sheet ($excel->worksheets) {
+    for my $sheet ($self->excel->worksheets) {
         push @{ $data->{worksheets} }, $self->_parse_worksheet($sheet);
     }
 
