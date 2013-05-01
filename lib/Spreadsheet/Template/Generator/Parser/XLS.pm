@@ -25,6 +25,8 @@ sub make_excel {
         ];
     }
 
+    # XXX no formula support yet
+
     return $excel;
 }
 

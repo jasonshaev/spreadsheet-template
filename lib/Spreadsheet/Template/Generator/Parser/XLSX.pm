@@ -1,6 +1,7 @@
 package Spreadsheet::Template::Generator::Parser::XLSX;
 use Moose;
 
+use POSIX;
 use Spreadsheet::XLSX;
 use XML::Entities;
 use XML::Twig;
@@ -48,6 +49,16 @@ sub make_excel {
         $sheet->{ColWidth} = [
             map { defined $_ ? 0+$_ : 0+$default_column_width } @column_widths
         ];
+
+        for my $formula ($root->find_nodes('//f')) {
+            my $cell_id = $formula->parent->att('r');
+            my ($col, $row) = $cell_id =~ /([A-Z]+)([0-9]+)/;
+            $col =~ tr/A-Z/0-9A-P/;
+            $col = POSIX::strtol($col, 26);
+            $row = $row - 1;
+            my $cell = $sheet->get_cell($row, $col);
+            $cell->{Formula} = "=" . $formula->text;
+        }
     }
 
     return $excel;

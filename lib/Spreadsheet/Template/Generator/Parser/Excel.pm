@@ -82,17 +82,13 @@ sub _parse_cell {
 
     my $contents = $cell->unformatted;
     my $type = $cell->type;
+    my $formula = $cell->{Formula}; # XXX
 
     if ($type eq 'Numeric') {
         $type = 'number';
     }
     elsif ($type eq 'Text') {
-        if ($contents =~ /^=/) {
-            $type = 'formula';
-        }
-        else {
-            $type = 'string';
-        }
+        $type = 'string';
     }
     elsif ($type eq 'Date') {
         $type = 'date_time';
@@ -104,6 +100,7 @@ sub _parse_cell {
     my $data = {
         contents => $self->_filter_cell_contents($contents, $type),
         type     => $type,
+        ($formula ? (formula => $formula) : ()),
     };
 
     return $data;
