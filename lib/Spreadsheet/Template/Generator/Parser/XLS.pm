@@ -21,10 +21,20 @@ sub _fixup_excel {
     my $self = shift;
     my ($excel) = @_;
 
+    $self->_parse_selected_sheet($excel);
+
     for my $sheet ($excel->worksheets) {
         $self->_normalize_cell_sizes($sheet);
         $self->_parse_formulas($sheet);
+        $self->_parse_selection($sheet);
     }
+}
+
+sub _parse_selected_sheet {
+    my $self = shift;
+    my ($excel) = @_;
+    # XXX no selected sheet support yet
+    $excel->{SelectedSheet} = 0;
 }
 
 sub _normalize_cell_sizes {
@@ -44,6 +54,13 @@ sub _normalize_cell_sizes {
 
 sub _parse_formulas {
     # XXX no formula support yet
+}
+
+sub _parse_selection {
+    my $self = shift;
+    my ($sheet) = @_;
+    # XXX no selection support yet
+    $sheet->{Selection} = [ 0, 0 ];
 }
 
 __PACKAGE__->meta->make_immutable;

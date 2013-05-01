@@ -20,23 +20,26 @@ sub _fixup_excel {
     my $self = shift;
     my ($excel) = @_;
 
-    my $filename = $self->filename;
-
-    my $zip = Archive::Zip->new;
-    die "Can't open $filename as zip file"
-        unless $zip->read($filename) == Archive::Zip::AZ_OK;
+    my $book_xml = $self->_parse_xml("xl/workbook.xml");
+    $self->_parse_selected_sheet($excel, $book_xml);
 
     for my $sheet ($excel->worksheets) {
-        my $contents = $zip->memberNamed("xl/$sheet->{path}")->contents;
-        next unless $contents;
+        my $sheet_xml = $self->_parse_xml("xl/$sheet->{path}");
 
-        my $xml = XML::Twig->new;
-        $xml->parse($contents);
-        my $root = $xml->root;
-
-        $self->_parse_cell_sizes($sheet, $root);
-        $self->_parse_formulas($sheet, $root);
+        $self->_parse_cell_sizes($sheet, $sheet_xml);
+        $self->_parse_formulas($sheet, $sheet_xml);
+        $self->_parse_sheet_selection($sheet, $sheet_xml);
     }
+}
+
+sub _parse_selected_sheet {
+    my $self = shift;
+    my ($excel, $root) = @_;
+
+    my ($node) = $root->find_nodes('//workbookView');
+    my $selected = $node->att('activeTab');
+
+    $excel->{SelectedSheet} = defined($selected) ? 0+$selected : 0;
 }
 
 sub _parse_cell_sizes {
@@ -74,13 +77,51 @@ sub _parse_formulas {
 
     for my $formula ($root->find_nodes('//f')) {
         my $cell_id = $formula->parent->att('r');
-        my ($col, $row) = $cell_id =~ /([A-Z]+)([0-9]+)/;
-        $col =~ tr/A-Z/0-9A-P/;
-        $col = POSIX::strtol($col, 26);
-        $row = $row - 1;
+        my ($row, $col) = $self->_cell_to_row_col($cell_id);
         my $cell = $sheet->get_cell($row, $col);
         $cell->{Formula} = "=" . $formula->text;
     }
+}
+
+sub _parse_sheet_selection {
+    my $self = shift;
+    my ($sheet, $root) = @_;
+
+    my ($selection) = $root->find_nodes('//selection');
+    my $cell = $selection->att('activeCell');
+
+    $sheet->{Selection} = [ $self->_cell_to_row_col($cell) ];
+}
+
+sub _parse_xml {
+    my $self = shift;
+    my ($subfile) = @_;
+
+    my $filename = $self->filename;
+
+    my $zip = Archive::Zip->new;
+    die "Can't open $filename as zip file"
+        unless $zip->read($filename) == Archive::Zip::AZ_OK;
+
+    my $contents = $zip->memberNamed($subfile)->contents;
+    next unless $contents;
+
+    my $xml = XML::Twig->new;
+    $xml->parse($contents);
+
+    return $xml->root;
+}
+
+sub _cell_to_row_col {
+    my $self = shift;
+    my ($cell) = @_;
+
+    my ($col, $row) = $cell =~ /([A-Z]+)([0-9]+)/;
+    $col =~ tr/A-Z/0-9A-P/;
+    $col = POSIX::strtol($col, 26);
+    $row = $row - 1;
+
+    return ($row, $col);
 }
 
 # XXX this stuff all feels like working around bugs in Spreadsheet::XLSX -

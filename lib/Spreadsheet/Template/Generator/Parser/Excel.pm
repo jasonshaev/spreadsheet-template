@@ -21,6 +21,7 @@ sub _parse_workbook {
     my $self = shift;
 
     my $data = {
+        selection  => $self->excel->{SelectedSheet}, # XXX
         worksheets => [],
     };
 
@@ -39,8 +40,7 @@ sub _parse_worksheet {
         name          => $sheet->get_name,
         row_heights   => [ $sheet->get_row_heights ],
         column_widths => [ $sheet->get_col_widths ],
-        # XXX Spreadsheet::ParseExcel doesn't currently support extracting the
-        # currently selected cells or worksheets
+        selection     => $sheet->{Selection}, # XXX
         cells         => [],
     };
 
