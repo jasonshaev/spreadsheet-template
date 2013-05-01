@@ -11,12 +11,6 @@ sub parse {
 
     my $excel = $self->make_excel($filename);
     return $self->_parse_workbook($excel);
-    my $data = {
-        worksheets => [],
-    };
-    for my $sheet ($excel->worksheets) {
-        push @{ $data->{worksheets} }, $self->_parse
-    }
 }
 
 sub _parse_workbook {
