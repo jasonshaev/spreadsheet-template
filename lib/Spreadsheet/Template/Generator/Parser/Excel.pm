@@ -39,11 +39,16 @@ sub _parse_worksheet {
     my ($sheet) = @_;
 
     my $data = {
-        cells => [],
+        row_heights   => [ $sheet->get_row_heights ],
+        column_widths => [ $sheet->get_col_widths ],
+        cells         => [],
     };
 
     my ($rmin, $rmax) = $sheet->row_range;
     my ($cmin, $cmax) = $sheet->col_range;
+
+    splice @{ $data->{row_heights} }, $rmax + 1;
+    splice @{ $data->{column_widths} }, $cmax + 1;
 
     for my $row (0..$rmin - 1) {
         push @{ $data->{cells} }, [];
