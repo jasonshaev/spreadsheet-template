@@ -80,12 +80,6 @@ sub _parse_cell {
     my $self = shift;
     my ($cell) = @_;
 
-    my %types = (
-        'Numeric' => 'number',
-        'Text'    => 'string',
-        'Date'    => 'date_time',
-    );
-
     my $contents = $cell->unformatted;
     my $type = $cell->type;
 
