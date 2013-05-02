@@ -80,6 +80,7 @@ sub _parse_cell {
     my $contents = $cell->unformatted;
     my $type = $cell->type;
     my $formula = $cell->{Formula}; # XXX
+    my $format = $cell->get_format;
 
     if ($type eq 'Numeric') {
         $type = 'number';
@@ -94,10 +95,48 @@ sub _parse_cell {
         die "unknown type $type";
     }
 
+    # use Data::Dump; ddx($cell);
+
+    my $format_data = {};
+    if ($format) {
+        my %halign = (
+            0 => 'none',
+            1 => 'left',
+            2 => 'center',
+            3 => 'right',
+            4 => 'fill',
+            5 => 'justify',
+            6 => 'center_across',
+        );
+
+        my %valign = (
+            0 => 'top',
+            1 => 'vcenter',
+            2 => 'bottom',
+            3 => 'vjustify',
+        );
+
+        $format_data->{size} = $format->{Font}{Height};
+        $format_data->{color} = '#' . Spreadsheet::ParseExcel->ColorIdxToRGB(
+            $format->{Font}{Color}
+        ) unless $format->{Font}{Color} == 8; # XXX
+        $format_data->{bg_color} = '#' . Spreadsheet::ParseExcel->ColorIdxToRGB(
+            $format->{Fill}[1]
+        ) unless $format->{Fill}[1] == 64;
+        $format_data->{align} = $halign{$format->{AlignH}}
+            unless $format->{AlignH} == 0;
+        $format_data->{valign} = $valign{$format->{AlignV}}
+            unless $format->{AlignV} == 2;
+        $format_data->{text_wrap} = JSON::true
+            if $format->{Wrap};
+        # XXX num_format
+    }
+
     my $data = {
         contents => $self->_filter_cell_contents($contents, $type),
         type     => $type,
         ($formula ? (formula => $formula) : ()),
+        (keys %$format_data ? (format => $format_data) : ()),
     };
 
     return $data;
