@@ -127,7 +127,9 @@ sub _parse_cell {
             unless $format->{AlignV} == 2;
         $format_data->{text_wrap} = JSON::true
             if $format->{Wrap};
-        # XXX num_format
+        my $wb = $self->excel;
+        $format_data->{num_format} = $wb->{FormatStr}{$format->{FmtIdx}}
+            unless $wb->{FormatStr}{$format->{FmtIdx}} eq 'GENERAL';
     }
 
     my $data = {
