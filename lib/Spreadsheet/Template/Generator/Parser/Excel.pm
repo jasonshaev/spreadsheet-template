@@ -95,8 +95,6 @@ sub _parse_cell {
         die "unknown type $type";
     }
 
-    # use Data::Dump; ddx($cell);
-
     my $format_data = {};
     if ($format) {
         my %halign = (
