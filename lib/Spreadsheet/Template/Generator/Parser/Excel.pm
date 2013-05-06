@@ -114,19 +114,25 @@ sub _parse_cell {
             3 => 'vjustify',
         );
 
-        $format_data->{size} = $format->{Font}{Height};
-        $format_data->{color} = '#' . Spreadsheet::ParseExcel->ColorIdxToRGB(
-            $format->{Font}{Color}
-        ) unless $format->{Font}{Color} == 8; # XXX
-        $format_data->{bg_color} = '#' . Spreadsheet::ParseExcel->ColorIdxToRGB(
-            $format->{Fill}[1]
-        ) unless $format->{Fill}[1] == 64;
-        $format_data->{align} = $halign{$format->{AlignH}}
-            unless $format->{AlignH} == 0;
-        $format_data->{valign} = $valign{$format->{AlignV}}
-            unless $format->{AlignV} == 2;
-        $format_data->{text_wrap} = JSON::true
-            if $format->{Wrap};
+        if (!$format->{IgnoreFont}) {
+            $format_data->{size} = $format->{Font}{Height};
+            $format_data->{color} = $self->_color(
+                $format->{Font}{Color}
+            ) unless $format->{Font}{Color} eq '8'; # XXX
+        }
+        if (!$format->{IgnoreFill}) {
+            $format_data->{bg_color} = $self->_color(
+                $format->{Fill}[1]
+            ) unless $format->{Fill}[1] eq '64'; # XXX
+        }
+        if (!$format->{IgnoreAlignment}) {
+            $format_data->{align} = $halign{$format->{AlignH}}
+                unless $format->{AlignH} == 0;
+            $format_data->{valign} = $valign{$format->{AlignV}}
+                unless $format->{AlignV} == 2;
+            $format_data->{text_wrap} = JSON::true
+                if $format->{Wrap};
+        }
         my $wb = $self->excel;
         $format_data->{num_format} = $wb->{FormatStr}{$format->{FmtIdx}}
             unless $wb->{FormatStr}{$format->{FmtIdx}} eq 'GENERAL';
@@ -146,6 +152,18 @@ sub _filter_cell_contents {
     my $self = shift;
     my ($contents) = @_;
     return $contents;
+}
+
+sub _color {
+    my $self = shift;
+    my ($color) = @_;
+
+    if ($color =~ /^#/) {
+        return $color;
+    }
+    else {
+        return '#' . Spreadsheet::ParseExcel->ColorIdxToRGB($color);
+    }
 }
 
 no Moose::Role;
