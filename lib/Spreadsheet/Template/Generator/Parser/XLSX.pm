@@ -77,6 +77,11 @@ sub _parse_styles {
         $_->name eq 'a:sysClr' ? $_->att('lastClr') : $_->att('val')
     } $theme_xml->root->find_nodes('//a:clrScheme/*/*');
 
+    # this shouldn't be necessary, but the documentation is wrong here
+    # see http://stackoverflow.com/questions/2760976/theme-confusion-in-spreadsheetml
+    ($colors[0], $colors[1]) = ($colors[1], $colors[0]);
+    ($colors[2], $colors[3]) = ($colors[3], $colors[2]);
+
     my @fills = map {
         my $fgcolor_node = $_->first_child('fgColor');
         my $fgcolor = 64; # XXX
