@@ -83,18 +83,10 @@ sub _parse_styles {
     ($colors[2], $colors[3]) = ($colors[3], $colors[2]);
 
     my @fills = map {
-        my $fgcolor_node = $_->first_child('fgColor');
-        my $fgcolor = 64; # XXX
-        if ($fgcolor_node) {
-            $fgcolor = '#' . $colors[$fgcolor_node->att('theme')]
-                if defined $fgcolor_node->att('theme');
-            $fgcolor = $fgcolor_node->att('indexed')
-                if defined $fgcolor_node->att('indexed');
-        }
         [
             0, # XXX
-            $fgcolor,
-            0, # XXX
+            $self->_pattern_color(\@colors, $_->first_child('fgColor')),
+            $self->_pattern_color(\@colors, $_->first_child('bgColor')),
         ]
     } $root->find_nodes('//fills/fill/patternFill');
 
@@ -295,6 +287,21 @@ sub _filter_cell_contents {
     }
 
     return $contents;
+}
+
+sub _pattern_color {
+    my $self = shift;
+    my ($colors, $color_node) = @_;
+
+    my $color = 64; # XXX
+    if ($color_node) {
+        $color = '#' . $colors->[$color_node->att('theme')]
+            if defined $color_node->att('theme');
+        $color = $color_node->att('indexed')
+            if defined $color_node->att('indexed');
+    }
+
+    return $color;
 }
 
 __PACKAGE__->meta->make_immutable;
