@@ -140,10 +140,11 @@ sub _parse_styles {
                 : 2;
 
             Spreadsheet::ParseExcel::Format->new(
-                IgnoreFont      => !$_->att('applyFont'),
-                IgnoreFill      => !$_->att('applyFill'),
-                IgnoreBorder    => !$_->att('applyBorder'),
-                IgnoreAlignment => !$_->att('applyAlignment'),
+                IgnoreFont         => !$_->att('applyFont'),
+                IgnoreFill         => !$_->att('applyFill'),
+                IgnoreBorder       => !$_->att('applyBorder'),
+                IgnoreAlignment    => !$_->att('applyAlignment'),
+                IgnoreNumberFormat => !$_->att('applyNumberFormat'),
 
                 FontNo => $iFnt,
                 Font   => $excel->{Font}[$iFnt],

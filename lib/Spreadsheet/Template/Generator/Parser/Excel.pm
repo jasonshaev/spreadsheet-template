@@ -133,9 +133,11 @@ sub _parse_cell {
             $format_data->{text_wrap} = JSON::true
                 if $format->{Wrap};
         }
-        my $wb = $self->excel;
-        $format_data->{num_format} = $wb->{FormatStr}{$format->{FmtIdx}}
-            unless $wb->{FormatStr}{$format->{FmtIdx}} eq 'GENERAL';
+        if (!$format->{IgnoreNumberFormat}) {
+            my $wb = $self->excel;
+            $format_data->{num_format} = $wb->{FormatStr}{$format->{FmtIdx}}
+                unless $wb->{FormatStr}{$format->{FmtIdx}} eq 'GENERAL';
+        }
     }
 
     my $data = {
