@@ -84,6 +84,8 @@ sub _write_workbook {
     my $self = shift;
     my ($data) = @_;
 
+    # XXX no way to write default cell properties
+
     if (exists $data->{properties}) {
         $self->excel->set_properties(%{ $data->{properties} });
     }
