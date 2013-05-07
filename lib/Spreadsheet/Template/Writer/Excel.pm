@@ -2,6 +2,7 @@ package Spreadsheet::Template::Writer::Excel;
 use Moose::Role;
 
 use Class::Load 'load_class';
+use List::Util 'first';
 
 with 'Spreadsheet::Template::Writer';
 
