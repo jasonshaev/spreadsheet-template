@@ -64,6 +64,12 @@ sub _parse_styles {
         # XXX ...
     );
 
+    my %border = (
+        none => 0,
+        thin => 5,
+        # XXX ...
+    );
+
     my $rels_xml = $self->_parse_xml("xl/_rels/workbook.xml.rels");
     my ($theme_file) = map {
         $_->att('Target')
@@ -104,9 +110,9 @@ sub _parse_styles {
                 } qw(left right top bottom)
             ],
             styles => [
-                # map { $border->first_child($_)->style }
-                #     qw(left right top bottom)
-                (0) x 4 # XXX
+                map {
+                    $border{$border->first_child($_)->att('style') || 'none'}
+                } qw(left right top bottom)
             ],
             diagonal => [
                 0, # XXX ->att('diagonalDown') and ->att('diagonalUp')

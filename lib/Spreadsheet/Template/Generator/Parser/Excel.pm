@@ -1,6 +1,8 @@
 package Spreadsheet::Template::Generator::Parser::Excel;
 use Moose::Role;
 
+use List::MoreUtils 'any';
+
 with 'Spreadsheet::Template::Generator::Parser';
 
 requires '_build_excel';
@@ -114,6 +116,11 @@ sub _parse_cell {
             3 => 'vjustify',
         );
 
+        my %border = (
+            0 => 'none',
+            5 => 'thin',
+        );
+
         if (!$format->{IgnoreFont}) {
             $format_data->{size} = $format->{Font}{Height};
             $format_data->{color} = $format->{Font}{Color}
@@ -125,6 +132,11 @@ sub _parse_cell {
         }
         if (!$format->{IgnoreBorder}) {
             $format_data->{border_color} = $format->{BdrColor};
+            if (any { $_ != 0 } @{ $format->{BdrStyle} }) { # XXX
+                $format_data->{border} = [
+                    map { $border{$_} } @{ $format->{BdrStyle} }
+                ];
+            }
         }
         if (!$format->{IgnoreAlignment}) {
             $format_data->{align} = $halign{$format->{AlignH}}
