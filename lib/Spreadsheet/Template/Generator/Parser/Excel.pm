@@ -116,14 +116,15 @@ sub _parse_cell {
 
         if (!$format->{IgnoreFont}) {
             $format_data->{size} = $format->{Font}{Height};
-            $format_data->{color} = $self->_color(
-                $format->{Font}{Color}
-            ) unless $format->{Font}{Color} eq '8'; # XXX
+            $format_data->{color} = $format->{Font}{Color}
+                unless lc($format->{Font}{Color}) eq '#ffffff'; # XXX
         }
         if (!$format->{IgnoreFill}) {
-            $format_data->{bg_color} = $self->_color(
-                $format->{Fill}[1]
-            ) unless $format->{Fill}[1] eq '64'; # XXX
+            $format_data->{bg_color} = $format->{Fill}[1]
+                unless $format->{Fill}[1] eq '#000000'; # XXX
+        }
+        if (!$format->{IgnoreBorder}) {
+            $format_data->{border_color} = $format->{BdrColor};
         }
         if (!$format->{IgnoreAlignment}) {
             $format_data->{align} = $halign{$format->{AlignH}}
@@ -154,18 +155,6 @@ sub _filter_cell_contents {
     my $self = shift;
     my ($contents) = @_;
     return $contents;
-}
-
-sub _color {
-    my $self = shift;
-    my ($color) = @_;
-
-    if ($color =~ /^#/) {
-        return $color;
-    }
-    else {
-        return '#' . Spreadsheet::ParseExcel->ColorIdxToRGB($color);
-    }
 }
 
 no Moose::Role;

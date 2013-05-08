@@ -85,10 +85,39 @@ sub _parse_styles {
     my @fills = map {
         [
             0, # XXX
-            $self->_pattern_color(\@colors, $_->first_child('fgColor')),
-            $self->_pattern_color(\@colors, $_->first_child('bgColor')),
+            $self->_color(\@colors, $_->first_child('fgColor')),
+            $self->_color(\@colors, $_->first_child('bgColor')),
         ]
     } $root->find_nodes('//fills/fill/patternFill');
+
+    my @borders = map {
+        my $border = $_;
+        # XXX specs say "begin" and "end" rather than "left" and "right",
+        # but... that's not what seems to be in the file itself (sigh)
+        {
+            colors => [
+                map {
+                    $self->_color(
+                        \@colors,
+                        $border->first_child($_)->first_child('color')
+                    )
+                } qw(left right top bottom)
+            ],
+            styles => [
+                # map { $border->first_child($_)->style }
+                #     qw(left right top bottom)
+                (0) x 4 # XXX
+            ],
+            diagonal => [
+                0, # XXX ->att('diagonalDown') and ->att('diagonalUp')
+                0, # XXX ->att('style')
+                $self->_color(
+                    \@colors,
+                    $border->first_child('diagonal')->first_child('color')
+                ),
+            ],
+        }
+    } $root->find_nodes('//borders/border');
 
     $excel->{FormatStr} = {
         0 => 'GENERAL',
@@ -99,17 +128,14 @@ sub _parse_styles {
 
     $excel->{Font} = [
         map {
-            my $iHeight = 0+$_->first_child('sz')->att('val');
-            my $color_node = $_->first_child('color');
-            my $color = defined($color_node->att('theme'))
-                ? $colors[$color_node->att('theme')]
-                : substr($color_node->att('rgb'), 2, 6);
+            my $iHeight  = 0+$_->first_child('sz')->att('val');
+            my $color    = $self->_color(\@colors, $_->first_child('color'));
             my $sFntName = $_->first_child('name')->att('val');
 
             Spreadsheet::ParseExcel::Font->new(
                 Height         => $iHeight,
                 # Attr           => $iAttr,
-                Color          => "#$color",
+                Color          => $color,
                 # Super          => $iSuper,
                 # UnderlineStyle => $iUnderline,
                 Name           => $sFntName,
@@ -126,6 +152,7 @@ sub _parse_styles {
     $excel->{Format} = [
         map {
             my $alignment = $_->first_child('alignment');
+            my $border = $_->first_child('border');
 
             my $iFnt = $_->att('fontId');
             my $iIdx = $_->att('numFmtId');
@@ -165,9 +192,9 @@ sub _parse_styles {
                 # Merge   => $iMerge,
                 # ReadDir => $iReadDir,
 
-                # BdrStyle => [ $iBdrSL, $iBdrSR,  $iBdrST, $iBdrSB ],
-                # BdrColor => [ $iBdrCL, $iBdrCR,  $iBdrCT, $iBdrCB ],
-                # BdrDiag  => [ $iBdrD,  $iBdrSD,  $iBdrCD ],
+                BdrStyle => $borders[$_->att('borderId')]{styles},
+                BdrColor => $borders[$_->att('borderId')]{colors},
+                BdrDiag  => $borders[$_->att('borderId')]{diagonal},
                 Fill     => $fills[$_->att('fillId')],
             )
         } $root->find_nodes('//cellXfs/xf')
@@ -290,16 +317,22 @@ sub _filter_cell_contents {
     return $contents;
 }
 
-sub _pattern_color {
+sub _color {
     my $self = shift;
     my ($colors, $color_node) = @_;
 
-    my $color = 64; # XXX
+    my $color; # XXX
     if ($color_node) {
+        $color = '#000000' # XXX
+            if $color_node->att('auto');
+        $color = '#' . Spreadsheet::ParseExcel->ColorIdxToRGB(
+            $color_node->att('indexed')
+        ) if defined $color_node->att('indexed');
+        $color = '#' . substr($color_node->att('rgb'), 2, 6)
+            if defined $color_node->att('rgb');
         $color = '#' . $colors->[$color_node->att('theme')]
             if defined $color_node->att('theme');
-        $color = $color_node->att('indexed')
-            if defined $color_node->att('indexed');
+        # XXX tint?
     }
 
     return $color;
