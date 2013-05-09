@@ -29,6 +29,7 @@ sub _fixup_excel {
     for my $sheet ($excel->worksheets) {
         my $sheet_xml = $self->_parse_xml("xl/$sheet->{path}");
 
+        $self->_fixup_cell_contents($sheet);
         $self->_parse_cell_sizes($sheet, $sheet_xml->root);
         $self->_parse_formulas($sheet, $sheet_xml->root);
         $self->_parse_sheet_selection($sheet, $sheet_xml->root);
@@ -213,6 +214,27 @@ sub _parse_styles {
     }
 }
 
+sub _fixup_cell_contents {
+    my $self = shift;
+    my ($sheet) = @_;
+
+    my ($rmin, $rmax) = $sheet->row_range;
+    my ($cmin, $cmax) = $sheet->col_range;
+
+    # XXX these are just bugs in Spreadsheet::XLSX since it "parses" the xml
+    # with regexes
+    for my $row ($rmin..$rmax) {
+        for my $col ($cmin..$cmax) {
+            my $cell = $sheet->get_cell($row, $col);
+            $cell->{Val} = XML::Entities::decode('all', $cell->{Val});
+            $cell->{_Value} = XML::Entities::decode('all', $cell->{_Value});
+            if ($cell->{Type} && $cell->{Type} eq 'Numeric') {
+                $cell->{Val} = 0+$cell->{Val};
+            }
+        }
+    }
+}
+
 sub _parse_cell_sizes {
     my $self = shift;
     my ($sheet, $root) = @_;
@@ -306,21 +328,6 @@ sub _cell_to_row_col {
     $row = $row - 1;
 
     return ($row, $col);
-}
-
-# XXX this stuff all feels like working around bugs in Spreadsheet::XLSX -
-# maybe look into that at some point
-sub _filter_cell_contents {
-    my $self = shift;
-    my ($contents, $type) = @_;
-
-    $contents = XML::Entities::decode('all', $contents);
-
-    if ($type eq 'number') {
-        $contents = 0+$contents;
-    }
-
-    return $contents;
 }
 
 sub _color {

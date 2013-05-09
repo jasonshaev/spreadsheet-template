@@ -154,19 +154,13 @@ sub _parse_cell {
     }
 
     my $data = {
-        contents => $self->_filter_cell_contents($contents, $type),
+        contents => $contents,
         type     => $type,
         ($formula ? (formula => $formula) : ()),
         (keys %$format_data ? (format => $format_data) : ()),
     };
 
     return $data;
-}
-
-sub _filter_cell_contents {
-    my $self = shift;
-    my ($contents) = @_;
-    return $contents;
 }
 
 no Moose::Role;
