@@ -165,14 +165,45 @@ sub _write_cell {
 
     my $format;
     if (exists $data->{format}) {
-        my $properties = {
+        my %border = (
+            thin => 1,
+        );
+
+        my $properties = { %{ $data->{format} } };
+
+        if (my $border = delete $properties->{border}) {
+            $properties = {
+                left   => $border->[0],
+                right  => $border->[1],
+                top    => $border->[2],
+                bottom => $border->[3],
+                %$properties,
+            };
+        }
+
+        if (my $border_color = delete $properties->{border_color}) {
+            $properties = {
+                left_color   => $border_color->[0],
+                right_color  => $border_color->[1],
+                top_color    => $border_color->[2],
+                bottom_color => $border_color->[3],
+                %$properties,
+            };
+        }
+
+        $properties = {
             map {
-                my $v = $data->{format}{$_};
+                my $v = $properties->{$_};
                 $_ => JSON::is_bool($v) ? ($v ? 1 : 0)
+                    : $_ eq 'left'      ? $border{$v}
+                    : $_ eq 'right'     ? $border{$v}
+                    : $_ eq 'top'       ? $border{$v}
+                    : $_ eq 'bottom'    ? $border{$v}
                     : $_ =~ /color/     ? $self->_color($v)
                     :                     $v
-            } keys %{ $data->{format} }
+            } keys %$properties
         };
+
         $format = $self->_format($properties);
     }
 
