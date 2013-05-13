@@ -107,6 +107,8 @@ sub _parse_cell {
             4 => 'fill',
             5 => 'justify',
             6 => 'center_across',
+            # XXX this isn't supported by Spreadsheet::WriteExcel
+            7 => 'distributed',
         );
 
         my %valign = (
@@ -114,11 +116,25 @@ sub _parse_cell {
             1 => 'vcenter',
             2 => 'bottom',
             3 => 'vjustify',
+            # XXX this isn't supported by Spreadsheet::WriteExcel
+            4 => 'vdistributed',
         );
 
         my %border = (
-            0 => 'none',
-            5 => 'thin',
+            0  => 'none',
+            1  => 'thin',
+            2  => 'medium',
+            3  => 'dashed',
+            4  => 'dotted',
+            5  => 'thick',
+            6  => 'double',
+            7  => 'hair',
+            8  => 'medium_dashed',
+            9  => 'dash_dot',
+            10 => 'medium_dash_dot',
+            11 => 'dash_dot_dot',
+            12 => 'medium_dash_dot_dot',
+            13 => 'slant_dash_dot',
         );
 
         if (!$format->{IgnoreFont}) {
