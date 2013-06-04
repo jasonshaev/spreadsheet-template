@@ -209,11 +209,21 @@ sub _write_cell {
 
     # XXX handle merged cells
 
-    $sheet->$write_method(
-        $row, $col,
-        $data->{contents},
-        (defined $format ? ($format) : ()),
-    );
+    if (defined $data->{formula}) {
+        $sheet->write_formula(
+            $row, $col,
+            $data->{formula},
+            (defined $format ? ($format) : (undef)),
+            $data->{contents},
+        );
+    }
+    else {
+        $sheet->$write_method(
+            $row, $col,
+            $data->{contents},
+            (defined $format ? ($format) : ()),
+        );
+    }
 }
 
 sub _color {
