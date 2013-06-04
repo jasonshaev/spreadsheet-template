@@ -137,14 +137,39 @@ sub _parse_cell {
             13 => 'slant_dash_dot',
         );
 
+        my %fill = (
+            0  => 'none',
+            1  => 'solid',
+            2  => 'medium_gray',
+            3  => 'dark_gray',
+            4  => 'light_gray',
+            5  => 'dark_horizontal',
+            6  => 'dark_vertical',
+            7  => 'dark_down',
+            8  => 'dark_up',
+            9  => 'dark_grid',
+            10 => 'dark_trellis',
+            11 => 'light_horizontal',
+            12 => 'light_vertical',
+            13 => 'light_down',
+            14 => 'light_up',
+            15 => 'light_grid',
+            16 => 'light_trellis',
+            17 => 'gray_125',
+            18 => 'gray_0625',
+        );
+
         if (!$format->{IgnoreFont}) {
             $format_data->{size} = $format->{Font}{Height};
             $format_data->{color} = $format->{Font}{Color}
                 unless lc($format->{Font}{Color}) eq '#ffffff'; # XXX
         }
         if (!$format->{IgnoreFill}) {
-            $format_data->{bg_color} = $format->{Fill}[1]
-                unless $format->{Fill}[1] eq '#000000'; # XXX
+            if ($format->{Fill}[0] != 0) {
+                $format_data->{pattern}  = $fill{$format->{Fill}[0]};
+                $format_data->{fg_color} = $format->{Fill}[1];
+                $format_data->{bg_color} = $format->{Fill}[2];
+            }
         }
         if (!$format->{IgnoreBorder}) {
             $format_data->{border_color} = $format->{BdrColor};
