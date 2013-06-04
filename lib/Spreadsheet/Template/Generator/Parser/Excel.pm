@@ -163,6 +163,10 @@ sub _parse_cell {
             $format_data->{size} = $format->{Font}{Height};
             $format_data->{color} = $format->{Font}{Color}
                 unless lc($format->{Font}{Color}) eq '#ffffff'; # XXX
+            $format_data->{bold} = JSON::true
+                if $format->{Font}{Bold};
+            $format_data->{italic} = JSON::true
+                if $format->{Font}{Italic};
         }
         if (!$format->{IgnoreFill}) {
             if ($format->{Fill}[0] != 0) {
