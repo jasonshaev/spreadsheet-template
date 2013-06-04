@@ -167,8 +167,15 @@ sub _parse_cell {
         if (!$format->{IgnoreFill}) {
             if ($format->{Fill}[0] != 0) {
                 $format_data->{pattern}  = $fill{$format->{Fill}[0]};
-                $format_data->{fg_color} = $format->{Fill}[1];
-                $format_data->{bg_color} = $format->{Fill}[2];
+                # XXX this seems pretty wrong, but... not sure what the
+                # actually right way is, and this works for now
+                if ($format_data->{pattern} eq 'solid') {
+                    $format_data->{bg_color} = $format->{Fill}[1];
+                }
+                else {
+                    $format_data->{fg_color} = $format->{Fill}[1];
+                    $format_data->{bg_color} = $format->{Fill}[2];
+                }
             }
         }
         if (!$format->{IgnoreBorder}) {
