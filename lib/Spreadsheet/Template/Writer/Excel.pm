@@ -245,6 +245,33 @@ sub _format {
     my $self = shift;
     my ($format_properties) = @_;
 
+    my %pattern = (
+        none             => 0,
+        solid            => 1,
+        medium_gray      => 2,
+        dark_gray        => 3,
+        light_gray       => 4,
+        dark_horizontal  => 5,
+        dark_vertical    => 6,
+        dark_down        => 7,
+        dark_up          => 8,
+        dark_grid        => 9,
+        dark_trellis     => 10,
+        light_horizontal => 11,
+        light_vertical   => 12,
+        light_down       => 13,
+        light_up         => 14,
+        light_grid       => 15,
+        light_trellis    => 16,
+        gray_125         => 17,
+        gray_0625        => 18,
+    );
+
+    if (exists $format_properties->{pattern}) {
+        $format_properties->{pattern} = $pattern{$format_properties->{pattern}}
+            unless $format_properties->{pattern} =~ /^\d+$/;
+    }
+
     my $key = JSON->new->canonical->encode($format_properties);
     if (exists $self->_formats->{$key}) {
         return $self->_formats->{$key};
