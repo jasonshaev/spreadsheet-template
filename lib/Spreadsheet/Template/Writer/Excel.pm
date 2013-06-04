@@ -121,8 +121,8 @@ sub _write_worksheet {
         $sheet->hide;
     }
 
-    if (exists $data->{selected}) {
-        $sheet->set_selection(@{ $data->{selected} });
+    if (exists $data->{selection}) {
+        $sheet->set_selection(@{ $data->{selection} });
     }
 
     if (exists $data->{freeze}) {
