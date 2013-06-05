@@ -214,7 +214,9 @@ sub _write_cell {
             $row, $col,
             $data->{formula},
             (defined $format ? ($format) : (undef)),
-            $data->{contents},
+            (defined $data->{contents}
+                ? ($data->{contents})
+                : ()),
         );
     }
     else {
