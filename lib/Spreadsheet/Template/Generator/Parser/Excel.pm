@@ -1,6 +1,7 @@
 package Spreadsheet::Template::Generator::Parser::Excel;
 use Moose::Role;
 
+use DateTime::Format::Excel;
 use List::MoreUtils 'any';
 
 with 'Spreadsheet::Template::Generator::Parser';
@@ -12,6 +13,13 @@ has excel => (
     isa     => 'Object',
     lazy    => 1,
     builder => '_build_excel',
+);
+
+has excel_dt => (
+    is      => 'ro',
+    isa     => 'DateTime::Format::Excel',
+    lazy    => 1,
+    default => sub { DateTime::Format::Excel->new },
 );
 
 sub parse {
@@ -26,6 +34,10 @@ sub _parse_workbook {
         selection  => $self->excel->{SelectedSheet}, # XXX
         worksheets => [],
     };
+
+    if ($self->excel->using_1904_date) {
+        $self->excel_dt->epoch_mac;
+    }
 
     for my $sheet ($self->excel->worksheets) {
         push @{ $data->{worksheets} }, $self->_parse_worksheet($sheet);
@@ -92,6 +104,8 @@ sub _parse_cell {
     }
     elsif ($type eq 'Date') {
         $type = 'date_time';
+        $contents = $self->excel_dt->parse_datetime($contents)->iso8601
+            if defined $contents && length $contents;
     }
     else {
         die "unknown type $type";
