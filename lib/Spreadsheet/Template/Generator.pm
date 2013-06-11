@@ -12,7 +12,7 @@ sub generate {
     load_class($class);
     my $parser = $class->new(filename => $filename);
     my $data = $parser->parse;
-    return JSON->new->pretty->encode($data);
+    return JSON->new->pretty->canonical->encode($data);
 }
 
 sub parser_classes {
