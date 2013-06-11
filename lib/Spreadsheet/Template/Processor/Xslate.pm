@@ -9,7 +9,7 @@ has xslate => (
     is      => 'ro',
     isa     => 'Text::Xslate',
     lazy    => 1,
-    default => sub { Text::Xslate->new },
+    default => sub { Text::Xslate->new(type => 'text') },
 );
 
 sub process {
