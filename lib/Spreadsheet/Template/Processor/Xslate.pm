@@ -8,7 +8,7 @@ with 'Spreadsheet::Template::Processor';
 has syntax => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'TTerse',
+    default => 'Metakolon',
 );
 
 has xslate => (
