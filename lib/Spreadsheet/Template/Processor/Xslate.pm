@@ -19,7 +19,8 @@ has xslate => (
         my $self = shift;
         return Text::Xslate->new(
             type   => 'text',
-            syntax => $self->syntax
+            syntax => $self->syntax,
+            module => ['Spreadsheet::Template::Helpers::Xslate'],
         );
     },
 );
