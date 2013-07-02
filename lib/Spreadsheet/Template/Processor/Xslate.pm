@@ -5,11 +5,23 @@ use Text::Xslate;
 
 with 'Spreadsheet::Template::Processor';
 
+has syntax => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => 'TTerse',
+);
+
 has xslate => (
     is      => 'ro',
     isa     => 'Text::Xslate',
     lazy    => 1,
-    default => sub { Text::Xslate->new(type => 'text') },
+    default => sub {
+        my $self = shift;
+        return Text::Xslate->new(
+            type   => 'text',
+            syntax => $self->syntax
+        );
+    },
 );
 
 sub process {
