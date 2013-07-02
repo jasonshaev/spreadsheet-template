@@ -11,10 +11,22 @@ has processor_class => (
     default => 'Spreadsheet::Template::Processor::Xslate',
 );
 
+has processor_options => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub { {} },
+);
+
 has writer_class => (
     is      => 'ro',
     isa     => 'Str',
     default => 'Spreadsheet::Template::Writer::XLSX',
+);
+
+has writer_options => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub { {} },
 );
 
 has processor => (
@@ -26,7 +38,7 @@ has processor => (
         my $self = shift;
         my $class = $self->processor_class;
         load_class($class);
-        return $class->new;
+        return $class->new($self->processor_options);
     },
 );
 
@@ -39,7 +51,7 @@ has writer => (
         my $self = shift;
         my $class = $self->writer_class;
         load_class($class);
-        return $class->new;
+        return $class->new($self->writer_options);
     },
 );
 
