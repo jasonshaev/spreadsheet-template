@@ -5,17 +5,54 @@ use Moose;
 use Class::Load 'load_class';
 use JSON;
 
+=head1 SYNOPSIS
+
+  use Spreadsheet::Template::Generator;
+
+  my $generator = Spreadsheet::Template::Generator->new;
+  open my $fh, '>:encoding(utf8)', 'out.json';
+  $fh->print($generator->generate($filename));
+
+=head1 DESCRIPTION
+
+This module is used to create new templates from existing spreadsheets. You can
+then modify this output to be suitable to use as input for
+L<Spreadsheet::Template> by, for instance, adding in L<Text::Xslate> directives
+to use your actual data, rather than the hardcoded data in the original
+spreadsheet.
+
+=cut
+
+=attr parser_class
+
+The class to use for parsing the spreadsheet. Defaults to
+L<Spreadsheet::Template::Generator::Parser::XLSX>.
+
+=cut
+
 has parser_class => (
     is      => 'ro',
     isa     => 'Str',
     default => 'Spreadsheet::Template::Generator::Parser::XLSX',
 );
 
+=attr parser_options
+
+Options to pass to the parser constructor. Defaults to an empty hashref.
+
+=cut
+
 has parser_options => (
     is      => 'ro',
     isa     => 'HashRef',
     default => sub { {} },
 );
+
+=attr parser
+
+The L<Spreadsheet::Template::Generator::Parser> instance that will be used.
+
+=cut
 
 has parser => (
     is   => 'ro',
@@ -30,6 +67,14 @@ has parser => (
         );
     },
 );
+
+=method generate($filename)
+
+Returns a string containing the JSON representation of the data contained in
+the spreadsheet file C<$filename>. This representation is documented in
+L<Spreadsheet::Template>.
+
+=cut
 
 sub generate {
     my $self = shift;
