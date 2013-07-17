@@ -2,11 +2,11 @@ package Spreadsheet::Template::Processor::Identity;
 use Moose;
 # ABSTRACT: render a template file with no processing at all
 
-does 'Spreadsheet::Template::Processor';
+with 'Spreadsheet::Template::Processor';
 
 sub process {
     my $self = shift;
-    my ($contents, $vars) = @_
+    my ($contents, $vars) = @_;
     return $contents;
 }
 
