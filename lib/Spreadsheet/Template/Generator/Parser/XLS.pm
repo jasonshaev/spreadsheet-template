@@ -5,11 +5,12 @@ use Spreadsheet::ParseExcel;
 
 with 'Spreadsheet::Template::Generator::Parser::Excel';
 
-sub _build_excel {
+sub _create_workbook {
     my $self = shift;
+    my ($filename) = @_;
 
     my $parser = Spreadsheet::ParseExcel->new;
-    my $excel = $parser->parse($self->filename);
+    my $excel = $parser->parse($filename);
     die $parser->error unless $excel;
 
     $self->_fixup_excel($excel);

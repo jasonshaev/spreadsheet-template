@@ -5,16 +5,9 @@ use DateTime::Format::Excel;
 
 with 'Spreadsheet::Template::Generator::Parser';
 
-requires '_build_excel';
+requires '_create_workbook';
 
-has excel => (
-    is      => 'ro',
-    isa     => 'Object',
-    lazy    => 1,
-    builder => '_build_excel',
-);
-
-has excel_dt => (
+has _excel_dt => (
     is      => 'ro',
     isa     => 'DateTime::Format::Excel',
     lazy    => 1,
@@ -23,23 +16,26 @@ has excel_dt => (
 
 sub parse {
     my $self = shift;
-    return $self->_parse_workbook;
+    my ($filename) = @_;
+    my $book = $self->_create_workbook($filename);
+    return $self->_parse_workbook($book);
 }
 
 sub _parse_workbook {
     my $self = shift;
+    my ($book) = @_;
 
     my $data = {
-        selection  => $self->excel->{SelectedSheet}, # XXX
+        selection  => $book->{SelectedSheet}, # XXX
         worksheets => [],
     };
 
-    if ($self->excel->using_1904_date) {
-        $self->excel_dt->epoch_mac;
+    if ($book->using_1904_date) {
+        $self->_excel_dt->epoch_mac;
     }
 
-    for my $sheet ($self->excel->worksheets) {
-        push @{ $data->{worksheets} }, $self->_parse_worksheet($sheet);
+    for my $sheet ($book->worksheets) {
+        push @{ $data->{worksheets} }, $self->_parse_worksheet($book, $sheet);
     }
 
     return $data;
@@ -47,7 +43,7 @@ sub _parse_workbook {
 
 sub _parse_worksheet {
     my $self = shift;
-    my ($sheet) = @_;
+    my ($book, $sheet) = @_;
 
     my $data = {
         name          => $sheet->get_name,
@@ -74,7 +70,7 @@ sub _parse_worksheet {
         }
         for my $col ($cmin..$cmax) {
             if (my $cell = $sheet->get_cell($row, $col)) {
-                push @$row_data, $self->_parse_cell($cell);
+                push @$row_data, $self->_parse_cell($book, $cell);
             }
             else {
                 push @$row_data, {};
@@ -88,7 +84,7 @@ sub _parse_worksheet {
 
 sub _parse_cell {
     my $self = shift;
-    my ($cell) = @_;
+    my ($book, $cell) = @_;
 
     my $contents = $cell->unformatted;
     my $type = $cell->type;
@@ -103,7 +99,7 @@ sub _parse_cell {
     }
     elsif ($type eq 'Date') {
         $type = 'date_time';
-        $contents = $self->excel_dt->parse_datetime($contents)->iso8601
+        $contents = $self->_excel_dt->parse_datetime($contents)->iso8601
             if defined $contents && length $contents;
     }
     else {
@@ -212,9 +208,8 @@ sub _parse_cell {
                 if $format->{Wrap};
         }
         if (!$format->{IgnoreNumberFormat}) {
-            my $wb = $self->excel;
-            $format_data->{num_format} = $wb->{FormatStr}{$format->{FmtIdx}}
-                unless $wb->{FormatStr}{$format->{FmtIdx}} eq 'GENERAL';
+            $format_data->{num_format} = $book->{FormatStr}{$format->{FmtIdx}}
+                unless $book->{FormatStr}{$format->{FmtIdx}} eq 'GENERAL';
         }
     }
 

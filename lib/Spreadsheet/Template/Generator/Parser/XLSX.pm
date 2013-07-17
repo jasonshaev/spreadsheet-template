@@ -6,11 +6,12 @@ use Spreadsheet::ParseXLSX;
 
 with 'Spreadsheet::Template::Generator::Parser::Excel';
 
-sub _build_excel {
+sub _create_workbook {
     my $self = shift;
+    my ($filename) = @_;
 
-    my $parser = Spreadsheet::ParseXLSX->new($self->filename);
-    return $parser->parse($self->filename);
+    my $parser = Spreadsheet::ParseXLSX->new($filename);
+    return $parser->parse($filename);
 }
 
 __PACKAGE__->meta->make_immutable;
