@@ -1,7 +1,6 @@
 package Spreadsheet::Template::Helpers::Xslate;
 use strict;
 use warnings;
-# ABSTRACT: adds some helper macros to templates that use Xslate
 
 use JSON;
 
