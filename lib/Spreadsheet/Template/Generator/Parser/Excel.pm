@@ -2,7 +2,6 @@ package Spreadsheet::Template::Generator::Parser::Excel;
 use Moose::Role;
 
 use DateTime::Format::Excel;
-use List::MoreUtils 'any';
 
 with 'Spreadsheet::Template::Generator::Parser';
 
@@ -198,7 +197,7 @@ sub _parse_cell {
         }
         if (!$format->{IgnoreBorder}) {
             $format_data->{border_color} = $format->{BdrColor};
-            if (any { $_ != 0 } @{ $format->{BdrStyle} }) { # XXX
+            if (grep { $_ != 0 } @{ $format->{BdrStyle} }) { # XXX
                 $format_data->{border} = [
                     map { $border{$_} } @{ $format->{BdrStyle} }
                 ];
