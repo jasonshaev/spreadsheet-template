@@ -1,5 +1,6 @@
 package Spreadsheet::Template::Generator::Parser::XLSX;
 use Moose;
+# ABSTRACT: parser for XLSX files
 
 use Spreadsheet::ParseXLSX;
 

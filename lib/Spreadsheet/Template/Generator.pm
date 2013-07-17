@@ -1,5 +1,6 @@
 package Spreadsheet::Template::Generator;
 use Moose;
+# ABSTRACT: create new templates from existing spreadsheets
 
 use Class::Load 'load_class';
 use JSON;

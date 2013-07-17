@@ -1,5 +1,6 @@
 package Spreadsheet::Template::Processor::Identity;
 use Moose;
+# ABSTRACT: render a template file with no processing at all
 
 does 'Spreadsheet::Template::Processor';
 

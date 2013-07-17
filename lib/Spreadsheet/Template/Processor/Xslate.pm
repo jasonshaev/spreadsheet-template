@@ -1,5 +1,6 @@
 package Spreadsheet::Template::Processor::Xslate;
 use Moose;
+# ABSTRACT: preprocess templates with Xslate
 
 use Text::Xslate;
 

@@ -1,5 +1,6 @@
 package Spreadsheet::Template::Writer::XLSX;
 use Moose;
+# ABSTRACT: generate XLSX files from templates
 
 with 'Spreadsheet::Template::Writer::Excel';
 
