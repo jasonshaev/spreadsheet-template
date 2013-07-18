@@ -2,6 +2,7 @@ package Spreadsheet::Template::Generator::Parser::Excel;
 use Moose::Role;
 
 use DateTime::Format::Excel;
+use JSON;
 
 with 'Spreadsheet::Template::Generator::Parser';
 
