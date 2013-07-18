@@ -48,12 +48,6 @@ has parser_options => (
     default => sub { {} },
 );
 
-=attr parser
-
-The L<Spreadsheet::Template::Generator::Parser> instance that will be used.
-
-=cut
-
 has parser => (
     is   => 'ro',
     does => 'Spreadsheet::Template::Generator::Parser',
