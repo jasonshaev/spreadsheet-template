@@ -4,6 +4,8 @@ use Moose;
 
 with 'Spreadsheet::Template::Writer::Excel';
 
+use Excel::Writer::XLSX;
+
 =head1 SYNOPSIS
 
   my $template = Spreadsheet::Template->new(
