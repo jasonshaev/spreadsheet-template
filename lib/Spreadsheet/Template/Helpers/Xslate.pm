@@ -62,4 +62,15 @@ sub _curry_package {
     return sub { $package->$name(@_) };
 }
 
+=begin Pod::Coverage
+
+ format
+ c
+ true
+ false
+
+=end Pod::Coverage
+
+=cut
+
 1;

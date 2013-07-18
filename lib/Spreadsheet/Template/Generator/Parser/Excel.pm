@@ -225,4 +225,12 @@ sub _parse_cell {
 
 no Moose::Role;
 
+=begin Pod::Coverage
+
+  parse
+
+=end Pod::Coverage
+
+=cut
+
 1;

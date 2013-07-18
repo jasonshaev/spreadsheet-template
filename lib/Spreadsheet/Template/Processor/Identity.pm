@@ -26,4 +26,12 @@ sub process {
 __PACKAGE__->meta->make_immutable;
 no Moose;
 
+=begin Pod::Coverage
+
+  process
+
+=end Pod::Coverage
+
+=cut
+
 1;

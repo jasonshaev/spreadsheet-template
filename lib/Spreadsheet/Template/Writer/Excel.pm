@@ -297,4 +297,12 @@ sub _format {
 
 no Moose::Role;
 
+=begin Pod::Coverage
+
+  write
+
+=end Pod::Coverage
+
+=cut
+
 1;

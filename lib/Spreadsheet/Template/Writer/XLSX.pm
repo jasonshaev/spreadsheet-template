@@ -22,4 +22,12 @@ sub excel_class { 'Excel::Writer::XLSX' }
 __PACKAGE__->meta->make_immutable;
 no Moose;
 
+=begin Pod::Coverage
+
+  excel_class
+
+=end Pod::Coverage
+
+=cut
+
 1;
