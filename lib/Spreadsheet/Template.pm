@@ -416,7 +416,15 @@ no Moose;
 
 =head1 BUGS
 
-No known bugs.
+=over 4
+
+=item *
+
+Default values aren't handled properly - spreadsheets can set defaults for
+things like font sizes, but this isn't actually handled, so cells that are
+supposed to use the default may get an incorrect value.
+
+=back
 
 Please report any bugs to GitHub Issues at
 L<https://github.com/doy/spreadsheet-template/issues>.
