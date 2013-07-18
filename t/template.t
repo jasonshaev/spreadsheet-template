@@ -6,9 +6,10 @@ use Test::More;
 use Spreadsheet::ParseXLSX;
 use Spreadsheet::Template;
 
+my $template = Spreadsheet::Template->new;
 my $data = do { local $/; local @ARGV = ('t/data/template.json'); <> };
 {
-    my $excel = Spreadsheet::Template->new->render(
+    my $excel = $template->render(
         $data,
         {
             rows => [
@@ -51,7 +52,7 @@ my $data = do { local $/; local @ARGV = ('t/data/template.json'); <> };
 }
 
 {
-    my $excel = Spreadsheet::Template->new->render(
+    my $excel = $template->render(
         $data,
         {
             rows => [

@@ -366,10 +366,9 @@ has writer_options => (
     default => sub { {} },
 );
 
-has processor => (
+has _processor => (
     is      => 'ro',
     does    => 'Spreadsheet::Template::Processor',
-    handles => 'Spreadsheet::Template::Processor',
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -379,18 +378,12 @@ has processor => (
     },
 );
 
-has writer => (
-    is      => 'ro',
-    does    => 'Spreadsheet::Template::Writer',
-    handles => 'Spreadsheet::Template::Writer',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        my $class = $self->writer_class;
-        load_class($class);
-        return $class->new($self->writer_options);
-    },
-);
+sub _writer {
+    my $self = shift;
+    my $class = $self->writer_class;
+    load_class($class);
+    return $class->new($self->writer_options);
+}
 
 =method render($template, $vars)
 
@@ -404,11 +397,11 @@ L<Spreadsheet::Template::Writer> instance.
 sub render {
     my $self = shift;
     my ($template, $vars) = @_;
-    my $contents = $self->process($template, $vars);
+    my $contents = $self->_processor->process($template, $vars);
     # not decode_json, since we expect that we are already being handed a
     # character string (decode_json also decodes utf8)
     my $data = from_json($contents);
-    return $self->write($data);
+    return $self->_writer->write($data);
 }
 
 __PACKAGE__->meta->make_immutable;
