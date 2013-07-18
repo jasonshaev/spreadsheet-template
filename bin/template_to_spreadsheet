@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-# PODNAME: generate_spreadsheet
+# PODNAME: template_to_spreadsheet
+# ABSTRACT: render a template into a spreadsheet
 
 use Spreadsheet::Template;
 
