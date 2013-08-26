@@ -1,7 +1,6 @@
 package Spreadsheet::Template::Helpers::Xslate;
 use strict;
 use warnings;
-use Data::Dumper;
 
 use JSON;
 
