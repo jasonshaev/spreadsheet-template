@@ -1,6 +1,7 @@
 package Spreadsheet::Template::Helpers::Xslate;
 use strict;
 use warnings;
+use Data::Dumper;
 
 use JSON;
 
@@ -10,10 +11,10 @@ use Sub::Exporter 'build_exporter';
 
 my $import = build_exporter({
     exports => [
-        map { $_ => \&_curry_package } qw(format c true false)
+        map { $_ => \&_curry_package } qw(format c merge true false)
     ],
     groups => {
-        default => [qw(format c true false)],
+        default => [qw(format c merge true false)],
     },
 });
 
@@ -29,6 +30,16 @@ sub format {
     my ($package, $name, $format) = @_;
     $formats{$package}{$name} = $format;
     return '';
+}
+
+sub merge {
+    my ($package, $range, $contents, $format) = @_;
+
+    return $JSON->encode({
+        range    => "$range",
+        contents => "$contents",
+        format   => _formats($package, $format)
+    });
 }
 
 sub c {

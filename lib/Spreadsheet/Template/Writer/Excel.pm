@@ -152,6 +152,27 @@ sub _write_worksheet {
             $self->_write_cell($data->{cells}[$row][$col], $sheet, $row, $col);
         }
     }
+
+    if (exists $data->{merge}) {
+        for my $i (0..$#{ $data->{merge} }) {
+            my $merge = $data->{merge}[$i];
+            my $format = $merge->{format};
+            my $format_obj;
+            if (exists $self->_formats->{$format}) {
+                $format_obj =  $self->_formats->{$format};
+            }
+            else {
+                $format_obj = $self->excel->add_format(%$format);
+                $self->_formats->{$format} = $format_obj;
+            }
+            $sheet->merge_range($merge->{range}, $merge->{contents}, $format_obj);
+        }
+    }
+    if (exists $data->{autofilter}) {
+        my $row = $data->{autofilter};
+        my $num_cols = scalar @{$data->{cells}[$data->{autofilter}]};
+        $sheet->autofilter($row, 0, $row, $num_cols-1);
+    }
 }
 
 sub _write_cell {
@@ -206,8 +227,6 @@ sub _write_cell {
 
         $format = $self->_format($properties);
     }
-
-    # XXX handle merged cells
 
     if (defined $data->{formula}) {
         $sheet->write_formula(
