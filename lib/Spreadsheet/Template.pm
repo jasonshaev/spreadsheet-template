@@ -45,6 +45,7 @@ been preprocessed is a JSON file, with a structure that looks like this:
            "name"          : "Sheet1",
            "row_heights"   : [ 18, 18, 18 ],
            "selection"     : [ 0, 0 ],
+           "autofilter"    : [ 0, 0, 0, 3],
            "cells"         : [
               [
                  {
@@ -104,7 +105,10 @@ been preprocessed is a JSON file, with a structure that looks like this:
                     "type"     : "string"
                  }
               ]
-           ]
+           ],
+           merge : [
+              ["range":"A1:D1","contents":"Merged Contents","format": { "color":"#000000" }]
+           ] 
         }
      ]
   }
