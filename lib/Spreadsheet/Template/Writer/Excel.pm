@@ -1,6 +1,13 @@
 package Spreadsheet::Template::Writer::Excel;
+BEGIN {
+  $Spreadsheet::Template::Writer::Excel::AUTHORITY = 'cpan:DOY';
+}
+{
+  $Spreadsheet::Template::Writer::Excel::VERSION = '0.01';
+}
 use Moose::Role;
 
+use Data::Dumper;
 use Class::Load 'load_class';
 use List::Util 'first';
 
@@ -169,9 +176,8 @@ sub _write_worksheet {
         }
     }
     if (exists $data->{autofilter}) {
-        my $row = $data->{autofilter};
-        my $num_cols = scalar @{$data->{cells}[$data->{autofilter}]};
-        $sheet->autofilter($row, 0, $row, $num_cols-1);
+        my @autofilter = @{$data->{autofilter}};
+        $sheet->autofilter($autofilter[0], $autofilter[1], $autofilter[2], $autofilter[3]);
     }
 }
 
@@ -185,7 +191,7 @@ sub _write_cell {
     }
 
     my $format;
-    if (exists $data->{format}) {
+    if ($data->{format}) {
         my %border = (
             thin => 1,
         );

@@ -34,6 +34,8 @@ my $data = do { local $/; local @ARGV = ('t/data/merge.json'); <> };
     my $ws = $wb->worksheet(0);
     is($ws->get_name, 'Merge Report 1');
 
+    # In the template, the 4 columns are merged
+    # with contents = "Merged Cells"
     for my $col (0..3) {
         if ($col == 0) {
             is($ws->get_cell(0, $col)->value, 'Merged Cells');
