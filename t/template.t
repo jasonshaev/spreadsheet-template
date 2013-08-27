@@ -7,7 +7,7 @@ use Spreadsheet::ParseXLSX;
 use Spreadsheet::Template;
 
 my $template = Spreadsheet::Template->new;
-my $data = do { local $/; local @ARGV = ('t/data/merge.json'); <> };
+my $data = do { local $/; local @ARGV = ('t/data/template.json'); <> };
 {
     my $excel = $template->render(
         $data,

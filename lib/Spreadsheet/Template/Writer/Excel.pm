@@ -1,13 +1,6 @@
 package Spreadsheet::Template::Writer::Excel;
-BEGIN {
-  $Spreadsheet::Template::Writer::Excel::AUTHORITY = 'cpan:DOY';
-}
-{
-  $Spreadsheet::Template::Writer::Excel::VERSION = '0.01';
-}
 use Moose::Role;
 
-use Data::Dumper;
 use Class::Load 'load_class';
 use List::Util 'first';
 
@@ -191,7 +184,7 @@ sub _write_cell {
     }
 
     my $format;
-    if ($data->{format}) {
+    if (exists $data->{format}) {
         my %border = (
             thin => 1,
         );
