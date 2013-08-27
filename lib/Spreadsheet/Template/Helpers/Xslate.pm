@@ -76,6 +76,7 @@ sub _curry_package {
 
  format
  c
+ merge
  true
  false
 

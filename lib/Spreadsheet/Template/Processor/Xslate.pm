@@ -39,6 +39,13 @@ C<"date_time">, and C<%args> contains any other parameters (such as C<formula>,
 for instance) to declare for the cell. C<$type> is optional, and if not passed,
 defaults to C<"string">.
 
+=item merge($range, $content, $format)
+
+Returns representation of a range of cells to be merged. C<$range> is the
+Excel representation of a range of cells, ex: "A1:B10". C<$content> is the
+content to be placed in the merged cell. C<$format> is the name of a format
+declared with the C<format> helper or a hashref of format options.
+
 =item true
 
 Returns C<JSON::true>.

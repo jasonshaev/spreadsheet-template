@@ -1,0 +1,27 @@
+%% my $default = { color => '#000000', size => 14 };
+%% format(basic => $default.merge({bold => true()}));
+
+{
+   "selection"  : 0,
+   "worksheets" : [
+      {
+         "column_widths" : [ 14.6, 18.5, 15.8, 12.2 ],
+         "name"          : "Merge Report 1",
+         "selection"     : [ 1, 9 ],
+         "row_heights"   : [ 25, 18, 18, 18 ],
+         "cells"         : [
+            %% for $rows -> $row {
+            [
+               [% c($row.value1, "basic") %],
+               [% c($row.value2, "basic") %],
+               [% c($row.value3, "basic") %],
+               [% c($row.value4, "basic") %]
+            ]
+            %% }
+         ],
+        "merge" : [
+            [% merge('A1:D1', 'Merged Cells', 'basic') %]
+        ] 
+      }
+   ]
+}
