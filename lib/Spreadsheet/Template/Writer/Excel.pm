@@ -153,39 +153,21 @@ sub _write_worksheet {
         }
     }
 
-    if ( exists $data->{merge} ) {
-        for my $i ( 0 .. $#{ $data->{merge} } ) {
-            my $merge  = $data->{merge}[$i];
-            my $format = $merge->{format};
-            my $format_obj;
-            if ( exists $self->_formats->{$format} ) {
-                $format_obj = $self->_formats->{$format};
-            }
-            else {
-                $format_obj = $self->excel->add_format(%$format);
-                $self->_formats->{$format} = $format_obj;
-            }
-
-            $merge->{type} = 'formula' if defined $merge->{formula};
-
-            $sheet->merge_range_type(
-                $merge->{type},
-                $merge->{first_row},
-                $merge->{first_col},
-                $merge->{last_row},
-                $merge->{last_col},
-                defined $merge->{formula}
-                ? $merge->{formula}
-                : $merge->{contents},
-                $format_obj,
-                defined $merge->{formula} ? $merge->{contents} : ()
-            );
+    if (exists $data->{merge}) {
+        for my $merge (@{ $data->{merge} }) {
+            $self->_write_merge($merge, $sheet);
         }
     }
-    if ( exists $data->{autofilter} ) {
-        my @autofilter = @{ $data->{autofilter} };
-        $sheet->autofilter( $autofilter[0], $autofilter[1], $autofilter[2],
-            $autofilter[3] );
+
+    if (exists $data->{autofilter}) {
+        for my $autofilter (@{ $data->{autofilter} }) {
+            $sheet->autofilter(
+                $autofilter->[0][0],
+                $autofilter->[0][1],
+                $autofilter->[1][0],
+                $autofilter->[1][1],
+            );
+        }
     }
 }
 
@@ -200,46 +182,7 @@ sub _write_cell {
 
     my $format;
     if (exists $data->{format}) {
-        my %border = (
-            thin => 1,
-        );
-
-        my $properties = { %{ $data->{format} } };
-
-        if (my $border = delete $properties->{border}) {
-            $properties = {
-                left   => $border->[0],
-                right  => $border->[1],
-                top    => $border->[2],
-                bottom => $border->[3],
-                %$properties,
-            };
-        }
-
-        if (my $border_color = delete $properties->{border_color}) {
-            $properties = {
-                left_color   => $border_color->[0],
-                right_color  => $border_color->[1],
-                top_color    => $border_color->[2],
-                bottom_color => $border_color->[3],
-                %$properties,
-            };
-        }
-
-        $properties = {
-            map {
-                my $v = $properties->{$_};
-                $_ => JSON::is_bool($v) ? ($v ? 1 : 0)
-                    : $_ eq 'left'      ? $border{$v}
-                    : $_ eq 'right'     ? $border{$v}
-                    : $_ eq 'top'       ? $border{$v}
-                    : $_ eq 'bottom'    ? $border{$v}
-                    : $_ =~ /color/     ? $self->_color($v)
-                    :                     $v
-            } keys %$properties
-        };
-
-        $format = $self->_format($properties);
+        $format = $self->_munge_format($data->{format});
     }
 
     if (defined $data->{formula}) {
@@ -259,6 +202,84 @@ sub _write_cell {
             (defined $format ? ($format) : ()),
         );
     }
+}
+
+sub _write_merge {
+    my $self = shift;
+    my ($data, $sheet) = @_;
+
+    my $format;
+    if (exists $data->{format}) {
+        $format = $self->_munge_format($data->{format});
+    }
+
+    if (exists $data->{formula}) {
+        $sheet->merge_range_type(
+            'formula',
+            @{ $data->{range}[0] },
+            @{ $data->{range}[1] },
+            $data->{formula},
+            (defined $format ? ($format) : (undef)),
+            (defined $data->{contents}
+                ? ($data->{contents})
+                : ()),
+        );
+    }
+    else {
+        $sheet->merge_range_type(
+            $data->{type},
+            @{ $data->{range}[0] },
+            @{ $data->{range}[1] },
+            $data->{contents},
+            (defined $format ? ($format) : ()),
+        );
+    }
+}
+
+sub _munge_format {
+    my $self = shift;
+    my ($format) = @_;
+
+    my %border = (
+        thin => 1,
+    );
+
+    my $properties = { %$format };
+
+    if (my $border = delete $properties->{border}) {
+        $properties = {
+            left   => $border->[0],
+            right  => $border->[1],
+            top    => $border->[2],
+            bottom => $border->[3],
+            %$properties,
+        };
+    }
+
+    if (my $border_color = delete $properties->{border_color}) {
+        $properties = {
+            left_color   => $border_color->[0],
+            right_color  => $border_color->[1],
+            top_color    => $border_color->[2],
+            bottom_color => $border_color->[3],
+            %$properties,
+        };
+    }
+
+    $properties = {
+        map {
+            my $v = $properties->{$_};
+            $_ => JSON::is_bool($v) ? ($v ? 1 : 0)
+                : $_ eq 'left'      ? $border{$v}
+                : $_ eq 'right'     ? $border{$v}
+                : $_ eq 'top'       ? $border{$v}
+                : $_ eq 'bottom'    ? $border{$v}
+                : $_ =~ /color/     ? $self->_color($v)
+                :                     $v
+        } keys %$properties
+    };
+
+    return $self->_format($properties);
 }
 
 sub _color {
