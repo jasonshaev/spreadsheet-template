@@ -153,24 +153,36 @@ sub _write_worksheet {
         }
     }
 
-    if (exists $data->{merge}) {
-        for my $i (0..$#{ $data->{merge} }) {
-            my $merge = $data->{merge}[$i];
+    if ( exists $data->{merge} ) {
+        for my $i ( 0 .. $#{ $data->{merge} } ) {
+            my $merge  = $data->{merge}[$i];
             my $format = $merge->{format};
             my $format_obj;
-            if (exists $self->_formats->{$format}) {
-                $format_obj =  $self->_formats->{$format};
+            if ( exists $self->_formats->{$format} ) {
+                $format_obj = $self->_formats->{$format};
             }
             else {
                 $format_obj = $self->excel->add_format(%$format);
                 $self->_formats->{$format} = $format_obj;
             }
-            $sheet->merge_range($merge->{range}, $merge->{contents}, $format_obj);
+
+            $merge->{type} = 'formula' if defined $merge->{formula};
+
+            $sheet->merge_range_type(
+                $merge->{type},
+                $merge->{range},
+                defined $merge->{formula}
+                ? $merge->{formula}
+                : $merge->{contents},
+                $format_obj,
+                defined $merge->{formula} ? $merge->{contents} : ()
+            );
         }
     }
-    if (exists $data->{autofilter}) {
-        my @autofilter = @{$data->{autofilter}};
-        $sheet->autofilter($autofilter[0], $autofilter[1], $autofilter[2], $autofilter[3]);
+    if ( exists $data->{autofilter} ) {
+        my @autofilter = @{ $data->{autofilter} };
+        $sheet->autofilter( $autofilter[0], $autofilter[1], $autofilter[2],
+            $autofilter[3] );
     }
 }
 

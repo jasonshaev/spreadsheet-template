@@ -32,13 +32,21 @@ sub format {
 }
 
 sub merge {
-    my ($package, $range, $contents, $format) = @_;
+    my ($package, $contents, $format, $type, $range, %args) = @_;
 
-    return $JSON->encode({
-        range    => "$range",
-        contents => "$contents",
-        format   => _formats($package, $format)
-    });
+    return $JSON->encode(
+        {
+            contents => "$contents",
+            format   => _formats( $package, $format ),
+            type     => $type,
+            range    => "$range",
+            (
+                defined $args{formula}
+                ? ( formula => $args{formula} )
+                : ()
+            ),
+        }
+    );
 }
 
 sub c {

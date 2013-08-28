@@ -1,5 +1,5 @@
 %% my $default = { color => '#000000', size => 14 };
-%% format(basic => $default.merge({bold => true()}));
+%% format(basic => $default.merge({bold => true(),align => 'left'}));
 
 {
    "selection"  : 0,
@@ -10,18 +10,32 @@
          "selection"     : [ 1, 9 ],
          "row_heights"   : [ 25, 18, 18, 18 ],
          "cells"         : [
+            %% for $headers -> $header {
+            [
+               [% c($header.value1, "basic") %],
+               [% c($header.value2, "basic") %],
+               [% c($header.value3, "basic") %],
+               [% c($header.value4, "basic") %]
+            ],
+            %% }
             %% for $rows -> $row {
             [
-               [% c($row.value1, "basic") %],
-               [% c($row.value2, "basic") %],
-               [% c($row.value3, "basic") %],
-               [% c($row.value4, "basic") %]
-            ]
+               [% c($row.value1, "basic", "number") %],
+               [% c($row.value2, "basic", "number") %],
+               [% c($row.value3, "basic", "number") %],
+               [% c($row.value4, "basic", "number") %]
+            ],
             %% }
+            [
+                [% c(0, "basic", "number" ) %]
+            ]
          ],
-        "merge" : [
-            [% merge('A1:D1', 'Merged Cells', 'basic') %]
-        ] 
+         "merge" : [
+            [% merge('Merged Header', 'basic', 'string','A1:D1') %],
+            [% merge($rows.map(-> $a {$a.value1}).reduce(-> $a,$b {$a + $b}), 'basic', 
+                 'number', 
+                 'A4:D4', formula => 'SUM(A2:A3)') %]
+         ] 
       }
    ]
 }
