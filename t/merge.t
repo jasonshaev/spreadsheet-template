@@ -62,11 +62,6 @@ my $data = do { local $/; local @ARGV = ('t/data/merge.json'); <> };
     my $value2 = $ws->get_cell(2,0)->value;
     my $sum = $value1 + $value2;
     is($ws->get_cell(3,0)->value, $sum);
-
-    open my $fh2, '>', 'out.xlsx';
-    binmode $fh2;
-    $fh2->print($excel);
-    $fh2->close;
 }
 
 done_testing;

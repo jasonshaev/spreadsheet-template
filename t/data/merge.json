@@ -26,9 +26,7 @@
                [% c($row.value4, "basic", "number") %]
             ],
             %% }
-            [
-                [% c(0, "basic", "number" ) %]
-            ]
+            []
          ],
          "merge" : [
             [% merge('Merged Header', 'basic', 'string', 0,0,0,3) %],
