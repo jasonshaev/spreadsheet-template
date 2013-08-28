@@ -39,12 +39,12 @@ C<"date_time">, and C<%args> contains any other parameters (such as C<formula>,
 for instance) to declare for the cell. C<$type> is optional, and if not passed,
 defaults to C<"string">.
 
-=item merge($content, $format, $type, $range, %args)
+=item merge($content, $format, $type, $first_row, $first_col, $last_row, $last_col, %args)
 
 Returns representation of a range of cells to be merged. C<$content> is the
 content to be placed in the merged cell. C<$type> is either C<"string">, C<"number">, 
-or C<"date_time">. C<$range> is the Excel representation 
-of a range of cells, ex: "A1:B10".  C<$format> is the name of a format
+or C<"date_time">. C<$first_row>, C<$first_col>, C<$last_row>, C<$last_col> are zero-indexed
+Excel row, column numbers. C<$format> is the name of a format
 declared with the C<format> helper or a hashref of format options.
 C<%args> contains any other parameters (such as C<formula>,
 for instance) to declare for the cell.

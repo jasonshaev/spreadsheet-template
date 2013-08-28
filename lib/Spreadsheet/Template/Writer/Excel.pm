@@ -170,7 +170,10 @@ sub _write_worksheet {
 
             $sheet->merge_range_type(
                 $merge->{type},
-                $merge->{range},
+                $merge->{first_row},
+                $merge->{first_col},
+                $merge->{last_row},
+                $merge->{last_col},
                 defined $merge->{formula}
                 ? $merge->{formula}
                 : $merge->{contents},

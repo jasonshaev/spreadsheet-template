@@ -107,7 +107,13 @@ been preprocessed is a JSON file, with a structure that looks like this:
               ]
            ],
            merge : [
-              ["range":"A1:D1","contents":"Merged Contents","format": { "color":"#000000" }]
+              ["contents":"Merged Contents","format":{"color":#000000"},
+               "type":"string",
+               "first_row": 0,
+               "first_col": 0,
+               "last_row" : 0,
+               "last_col" : 3
+              ]
            ] 
         }
      ]

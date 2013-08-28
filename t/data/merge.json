@@ -31,10 +31,12 @@
             ]
          ],
          "merge" : [
-            [% merge('Merged Header', 'basic', 'string','A1:D1') %],
+            [% merge('Merged Header', 'basic', 'string', 0,0,0,3) %],
             [% merge($rows.map(-> $a {$a.value1}).reduce(-> $a,$b {$a + $b}), 'basic', 
                  'number', 
-                 'A4:D4', formula => 'SUM(A2:A3)') %]
+                 3,0,3,3, 
+                formula => 'SUM(A2:A3)'
+            ) %]
          ] 
       }
    ]
