@@ -1,6 +1,8 @@
 Revision history for Spreadsheet-Template
 
 {{$NEXT}}
+      - add 'merge' and 'autofilter' options to the template format
+        (jasonshaev, #1)
 
 0.01  2013-07-18
       - Initial release
