@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use JSON;
-use POSIX;
 
 my $JSON = JSON->new;
 
@@ -82,13 +81,13 @@ sub _cell_to_row_col {
 
     my ($col, $row) = $cell =~ /([A-Z]+)([0-9]+)/;
 
-    (my $ncol = $col) =~ tr/A-Z/1-9A-Q/;
-    $ncol = POSIX::strtol($ncol, 27);
-    $ncol -= 1;
+    my $ncol = 0;
+    for my $char (split //, $col) {
+        $ncol *= 26;
+        $ncol += ord($char) - ord('A') + 1;
+    }
 
-    my $nrow = $row - 1;
-
-    return [ $nrow, $ncol ];
+    return [ $row - 1, $ncol - 1 ];
 }
 
 sub _formats {
