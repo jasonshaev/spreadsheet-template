@@ -9,7 +9,7 @@ use Spreadsheet::ParseXLSX;
 use Spreadsheet::Template;
 
 my $template = Spreadsheet::Template->new;
-my $data = do { local $/; local @ARGV = ('t/data/utf8.json'); <> };
+my $data = do { open my $fh, '<:encoding(UTF-8)', 't/data/utf8.json'; local $/; <$fh> };
 {
     my $excel = $template->render(
         $data,
