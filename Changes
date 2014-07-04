@@ -1,6 +1,8 @@
 Revision history for Spreadsheet-Template
 
 {{$NEXT}}
+
+0.03  2014-07-04
       - fix default color handling to line up with changes in
         Spreadsheet::ParseExcel and Spreadsheet::ParseXLSX (edibleenergy, #3,
         #4)
