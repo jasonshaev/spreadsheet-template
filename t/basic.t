@@ -100,7 +100,7 @@ my $data;
         ok($format->{Wrap});
         is_deeply($format->{Fill}, [0, undef, undef]);
         is_deeply($format->{BdrStyle}, [(1) x 4]);
-        is_deeply($format->{BdrColor}, [('#000000') x 4]);
+        is_deeply($format->{BdrColor}, [(undef) x 4]);
         is_deeply($format->{BdrDiag}, [0, 0, undef]);
 
         my $font = $format->{Font};

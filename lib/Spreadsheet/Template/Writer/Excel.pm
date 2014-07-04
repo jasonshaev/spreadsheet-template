@@ -286,6 +286,8 @@ sub _color {
     my $self = shift;
     my ($color) = @_;
 
+    return 64 if !defined($color);
+
     if (exists $self->_colors->{$color}) {
         return $self->_colors->{$color};
     }
