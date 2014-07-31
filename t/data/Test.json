@@ -28,10 +28,10 @@
                         "thin"
                      ],
                      "border_color" : [
-                        null,
-                        null,
-                        null,
-                        null
+                        "#000000",
+                        "#000000",
+                        "#000000",
+                        "#000000"
                      ],
                      "text_wrap" : true
                   },
